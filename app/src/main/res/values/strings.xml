@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Android-HW</string>
+    <string name="view_text">View text</string>
+    <string name="edit_text">Edit text</string>
+    <string name="second_activity">Second Activity</string>
+    <string name="call">Call</string>
+    <string name="share">Share</string>
 </resources>
