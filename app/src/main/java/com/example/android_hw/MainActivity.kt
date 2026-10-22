@@ -1,6 +1,13 @@
 package com.example.android_hw
 
 import android.os.Bundle
+import androidx.compose.foundation.clickable
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+import com.example.android_hw.appdetails.AppDetailsScreen
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
@@ -46,7 +53,25 @@ class MainActivity : ComponentActivity() {
         )
         setContent {
             CatalogTheme {
-                AppListScreen()
+                val navController = rememberNavController()
+                NavHost(navController = navController, startDestination = "apps") {
+                    composable("apps") {
+                        AppListScreen(onAppClick = { app ->
+                            navController.navigate("details/${app.id}")
+                        })
+                    }
+                    composable(
+                        route = "details/{appId}",
+                        arguments = listOf(navArgument("appId") { type = NavType.StringType }),
+                    ) { entry ->
+                        val app = applications.first { it.id == entry.arguments?.getString("appId") }
+                        AppDetailsScreen(
+                            app = app,
+                            onBackClick = { navController.popBackStack() },
+                            onShowcaseClick = { navController.popBackStack("apps", false) },
+                        )
+                    }
+                }
             }
         }
     }
@@ -70,7 +95,7 @@ private fun CatalogTheme(content: @Composable () -> Unit) {
 }
 
 @Composable
-fun AppListScreen(modifier: Modifier = Modifier) {
+fun AppListScreen(modifier: Modifier = Modifier, onAppClick: (AppInfo) -> Unit = {}) {
     Scaffold(
         modifier = modifier,
         topBar = { Toolbar() },
@@ -78,6 +103,7 @@ fun AppListScreen(modifier: Modifier = Modifier) {
     ) { innerPadding ->
         Apps(
             apps = applications,
+            onAppClick = onAppClick,
             modifier = Modifier.fillMaxSize().padding(innerPadding),
         )
     }
@@ -111,6 +137,7 @@ private fun Toolbar(modifier: Modifier = Modifier) {
 @Composable
 fun Apps(
     apps: List<AppInfo>,
+    onAppClick: (AppInfo) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -119,13 +146,13 @@ fun Apps(
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         items(apps, key = { it.id }) { app ->
-            AppItem(app = app)
+            AppItem(app = app, modifier = Modifier.clickable { onAppClick(app) })
         }
     }
 }
 
 @Composable
-private fun AppItem(
+fun AppItem(
     app: AppInfo,
     modifier: Modifier = Modifier,
 ) {
