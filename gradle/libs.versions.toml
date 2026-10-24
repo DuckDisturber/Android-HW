@@ -10,8 +10,10 @@ activityKtx = "1.13.0"
 constraintlayout = "2.2.2"
 composeBom = "2025.08.01"
 kotlin = "2.2.10"
+lifecycle = "2.9.4"
 
 [libraries]
+androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version = "2.9.3" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityKtx" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }

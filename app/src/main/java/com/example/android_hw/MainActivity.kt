@@ -31,9 +31,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -95,14 +101,27 @@ private fun CatalogTheme(content: @Composable () -> Unit) {
 }
 
 @Composable
-fun AppListScreen(modifier: Modifier = Modifier, onAppClick: (AppInfo) -> Unit = {}) {
+fun AppListScreen(
+    modifier: Modifier = Modifier,
+    onAppClick: (AppInfo) -> Unit = {},
+    viewModel: AppListViewModel = viewModel(),
+) {
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
     Scaffold(
         modifier = modifier,
-        topBar = { Toolbar() },
+        topBar = {
+            Toolbar(onClick = {
+                scope.launch {
+                    snackbarHostState.showSnackbar("Вы открыли список приложений")
+                }
+            })
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         containerColor = MaterialTheme.colorScheme.background,
     ) { innerPadding ->
         Apps(
-            apps = applications,
+            apps = viewModel.apps,
             onAppClick = onAppClick,
             modifier = Modifier.fillMaxSize().padding(innerPadding),
         )
@@ -111,12 +130,13 @@ fun AppListScreen(modifier: Modifier = Modifier, onAppClick: (AppInfo) -> Unit =
 
 
 @Composable
-private fun Toolbar(modifier: Modifier = Modifier) {
+private fun Toolbar(onClick: () -> Unit, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.primary)
             .statusBarsPadding()
+            .clickable(onClick = onClick)
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -199,6 +219,6 @@ fun AppItem(
 @Composable
 private fun Preview() {
     CatalogTheme {
-        AppListScreen()
+        AppListScreen(viewModel = AppListViewModel())
     }
 }
