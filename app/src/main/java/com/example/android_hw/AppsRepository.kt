@@ -1,5 +1,5 @@
 package com.example.android_hw
 
 interface AppsRepository {
-    fun getApps(): List<AppInfo>
+    suspend fun getApps(): List<AppInfo>
 }

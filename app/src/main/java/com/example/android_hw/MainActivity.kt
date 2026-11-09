@@ -50,6 +50,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dagger.hilt.android.AndroidEntryPoint
+import coil3.compose.AsyncImage
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -74,8 +75,10 @@ class MainActivity : ComponentActivity() {
                         route = "details/{appId}",
                         arguments = listOf(navArgument("appId") { type = NavType.StringType }),
                     ) { entry ->
-                        val app = applications.first { it.id == entry.arguments?.getString("appId") }
-                        AppDetailsScreen(
+                        val app = appListViewModel.apps.firstOrNull {
+                            it.id == entry.arguments?.getString("appId")
+                        }
+                        if (app != null) AppDetailsScreen(
                             app = app,
                             onBackClick = { navController.popBackStack() },
                             onShowcaseClick = { navController.popBackStack("apps", false) },
@@ -124,7 +127,11 @@ fun AppListScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         containerColor = MaterialTheme.colorScheme.background,
     ) { innerPadding ->
-        Apps(
+        if (viewModel.isLoading) {
+            Text("Загрузка…", Modifier.padding(innerPadding).padding(16.dp))
+        } else if (viewModel.error != null) {
+            Text(viewModel.error.orEmpty(), Modifier.padding(innerPadding).padding(16.dp))
+        } else Apps(
             apps = viewModel.apps,
             onAppClick = onAppClick,
             modifier = Modifier.fillMaxSize().padding(innerPadding),
@@ -184,8 +191,10 @@ fun AppItem(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.Top,
     ) {
-        Image(
-            painter = painterResource(app.iconRes),
+        AsyncImage(
+            model = app.iconUrl ?: app.iconRes,
+            placeholder = painterResource(app.iconRes),
+            error = painterResource(app.iconRes),
             contentDescription = null,
             contentScale = ContentScale.Fit,
             modifier = Modifier
@@ -223,6 +232,6 @@ fun AppItem(
 @Composable
 private fun Preview() {
     CatalogTheme {
-        AppListScreen(viewModel = AppListViewModel(AppsRepositoryImpl()))
+        Apps(apps = applications)
     }
 }

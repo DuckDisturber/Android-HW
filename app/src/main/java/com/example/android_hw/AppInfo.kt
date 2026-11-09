@@ -13,6 +13,7 @@ data class AppInfo(
     val ageRating: Int = 12,
     val size: Float = 100f,
     val screenshots: List<Int> = listOf(R.drawable.ic_launcher_foreground),
+    val iconUrl: String? = null,
 )
 
 val applications = listOf(
