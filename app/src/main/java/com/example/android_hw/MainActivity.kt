@@ -12,6 +12,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -38,7 +39,6 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,8 +49,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private val appListViewModel: AppListViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge(
@@ -62,7 +66,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 NavHost(navController = navController, startDestination = "apps") {
                     composable("apps") {
-                        AppListScreen(onAppClick = { app ->
+                        AppListScreen(viewModel = appListViewModel, onAppClick = { app ->
                             navController.navigate("details/${app.id}")
                         })
                     }
@@ -104,7 +108,7 @@ private fun CatalogTheme(content: @Composable () -> Unit) {
 fun AppListScreen(
     modifier: Modifier = Modifier,
     onAppClick: (AppInfo) -> Unit = {},
-    viewModel: AppListViewModel = viewModel(),
+    viewModel: AppListViewModel,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -219,6 +223,6 @@ fun AppItem(
 @Composable
 private fun Preview() {
     CatalogTheme {
-        AppListScreen(viewModel = AppListViewModel())
+        AppListScreen(viewModel = AppListViewModel(AppsRepositoryImpl()))
     }
 }
