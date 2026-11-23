@@ -133,6 +133,7 @@ fun AppListScreen(
             Text(viewModel.error.orEmpty(), Modifier.padding(innerPadding).padding(16.dp))
         } else Apps(
             apps = viewModel.apps,
+            ratings = viewModel.ratings,
             onAppClick = onAppClick,
             modifier = Modifier.fillMaxSize().padding(innerPadding),
         )
@@ -170,6 +171,7 @@ fun Apps(
     apps: List<AppInfo>,
     onAppClick: (AppInfo) -> Unit = {},
     modifier: Modifier = Modifier,
+    ratings: Map<String, Float> = emptyMap(),
 ) {
     LazyColumn(
         modifier = modifier,
@@ -177,7 +179,7 @@ fun Apps(
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         items(apps, key = { it.id }) { app ->
-            AppItem(app = app, modifier = Modifier.clickable { onAppClick(app) })
+            AppItem(app = app, rating = ratings[app.id], modifier = Modifier.clickable { onAppClick(app) })
         }
     }
 }
@@ -186,6 +188,7 @@ fun Apps(
 fun AppItem(
     app: AppInfo,
     modifier: Modifier = Modifier,
+    rating: Float? = null,
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -206,7 +209,7 @@ fun AppItem(
         Spacer(Modifier.width(16.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = app.name,
+                text = if (rating == null) app.name else "${app.name}  ★ $rating",
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 2,

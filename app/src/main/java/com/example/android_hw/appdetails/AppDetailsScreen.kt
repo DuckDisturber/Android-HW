@@ -27,6 +27,8 @@ fun AppDetailsScreen(
     onShowcaseClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val viewModel: AppDetailsViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+    val state by viewModel.state.collectAsState()
     var descriptionExpanded by rememberSaveable(app.id) { mutableStateOf(false) }
     val context = LocalContext.current
     val underDevelopment = {
@@ -49,7 +51,11 @@ fun AppDetailsScreen(
         Spacer(Modifier.height(8.dp))
         AppDetailsHeader(app, Modifier.padding(horizontal = 16.dp))
         Spacer(Modifier.height(16.dp))
-        InstallButton(underDevelopment, Modifier.fillMaxWidth().padding(horizontal = 16.dp))
+        InstallButton(
+            installState = state.installState,
+            onClick = viewModel::onInstallClick,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        )
         Spacer(Modifier.height(12.dp))
         ScreenshotsList(app.screenshots, PaddingValues(horizontal = 16.dp))
         Spacer(Modifier.height(12.dp))

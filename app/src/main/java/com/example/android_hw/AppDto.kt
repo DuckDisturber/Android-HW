@@ -17,3 +17,11 @@ fun AppDto.toAppInfo(): AppInfo = AppInfo(
     iconBackground = 0xFF4056C8,
     iconUrl = iconUrl,
 )
+
+fun AppInfo.toAppDto(): AppDto = AppDto(
+    id = id,
+    name = name,
+    description = description,
+    category = category,
+    iconUrl = iconUrl.orEmpty(),
+)

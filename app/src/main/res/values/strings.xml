@@ -24,4 +24,6 @@
     <string name="app_details_error_refresh">Перезагрузить</string>
     <string name="app_details_similar_apps">Вам может понравиться</string>
     <string name="app_details_download">Скачать</string>
+    <string name="cancel_install">Отменить (%1$d%%)</string>
+    <string name="installed">Установлено</string>
 </resources>

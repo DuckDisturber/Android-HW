@@ -13,15 +13,21 @@ import com.example.android_hw.R
 
 @Composable
 fun InstallButton(
+    installState: InstallState,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Button(
         onClick = onClick,
+        enabled = installState != InstallState.Installed,
         shape = RoundedCornerShape(8.dp),
         contentPadding = PaddingValues(vertical = 12.dp),
         modifier = modifier,
     ) {
-        Text(text = stringResource(R.string.install))
+        Text(when (installState) {
+            InstallState.NotInstalled -> stringResource(R.string.install)
+            is InstallState.Installing -> stringResource(R.string.cancel_install, installState.progress)
+            InstallState.Installed -> stringResource(R.string.installed)
+        })
     }
 }
